@@ -31,20 +31,13 @@
   <!-- Frame coincident with all-zeros TCP on UR controller -->
   <xacro:property name="tool0_offset" value="0.15"/>
 
-  <link name="grasping_link"/>
+  <!-- <link name="grasping_link"/>
   <joint name="ur5_joint_grasping_frame" type="fixed">
     <origin xyz="0 0 ${tool0_offset}" rpy="0 0 0"/>
     <parent link="tool0"/>
     <child link="grasping_link"/>
-  </joint>
+  </joint> -->
 
-  <!-- This frame is placed in the same position as the box inserted in Gazebo in order to be visualized in RVIZ (just for comparison) -->
-  <link name="reference_link"/>
-  <joint name="reference_frame" type="fixed">
-    <origin xyz="-0.5 0.1 0.05" rpy="0 0 -0.6"/>
-    <parent link="base_link"/>
-    <child link="reference_link"/>
-  </joint>
 
 
   ########################################
