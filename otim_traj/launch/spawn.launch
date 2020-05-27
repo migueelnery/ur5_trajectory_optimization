@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+        <!-- Robot model -->
+        <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find otim_traj)/urdf/ur5_grasp.urdf.xacro'" />
+        <arg name="x" default="0.35"/> 
+        <arg name="y" default="0"/> 
+        <arg name="z" default="1.015"/>
+
+
+        <!-- Spawn the robot model -->
+        <node name="mybot_spawn" pkg="gazebo_ros" type="spawn_model" output="screen"
+                args="-urdf -param robot_description -model robot -x $(arg x) -y $(arg y) -z $(arg z)" />
+
+        <!-- Load joint names into the parameter server -->
+        <rosparam file="$(find otim_traj)/config/joint_names.yaml" command="load" />
+
+
+        ########################################
+        # Load Gripper Controllers
+        ########################################
+        Load Robotiq Gripper Controller  
+        <rosparam file="$(find otim_traj)/config/ur5gripper_controllers.yaml"
+                command="load"/>
+
+        <node name="gripper_controller_spawner"
+                pkg="controller_manager"
+                type="spawner"
+                args="gripper_controller_pos"/>
+
+
+        ########################################
+        # Load UR5 Controllers
+        # load velocity and position controllers
+        ########################################
+        <include file="$(find ur_gazebo)/launch/controller_utils.launch"/>
+
+        <!-- start this controller -->
+        <rosparam file="$(find otim_traj)/config/ur5_controllers.yaml" command="load"/>
+
+        <node name="arm_controller_spawner" pkg="controller_manager" type="spawner" args="arm_controller" respawn="false" output="screen"/>
+
+        <!-- load other controllers -->
+        <node name="ros_control_controller_manager" pkg="controller_manager" type="controller_manager" respawn="false" output="screen" args="load joint_group_position_controller"/>
+
+
+
+</launch>
