@@ -6,6 +6,6 @@ moveit_setup_assistant_config:
   SRDF:
     relative_path: config/ur5.srdf
   CONFIG:
-    author_name: Miguel Nery
+    author_name: miguel
     author_email: migueelnery@gmail.com
-    generated_timestamp: 1590592727
+    generated_timestamp: 1590770255

@@ -15,6 +15,9 @@
   <!-- It is necessary to change the hardware interface on the fly -->
   <!-- <xacro:include filename="$(find otim_traj)/urdf/ur5.transmission.xacro"/> -->
 
+  <!-- camera -->
+   <xacro:include filename="$(find otim_traj)/urdf/_d435.urdf.xacro" />
+
   <!-- arm -->
   <xacro:ur5_robot prefix="" joint_limited="false" transmission_hw_interface="$(arg transmission_hw_interface)"/>
 
@@ -38,6 +41,45 @@
     <child link="grasping_link"/>
   </joint> -->
 
+  ########################################
+  # CAN Support code
+  ########################################
+
+  <!-- o wrist 2 fica 0.09465 m abaixo de wrist 3 (-0.0445+0.09465)-->
+  <!-- Its position is relative to its own (Caution: treat as inverse direction)-->
+  <!-- Its orientation is relative to the previous frame -->
+  <link name="CAM_support_link">
+    <visual>
+      <!-- The cam is rotated 14 degrees (0.24rad) through the yaw axis -->
+      <origin rpy="${1.57 - 0.244} ${3.14} -1.57" xyz="${0.002 - 0.03} ${-0.023 + 0.03 - 0.01} ${0.13915-0.205}"/>
+      <geometry>
+        <mesh filename="package://otim_traj/model/cam_support/CAM_support.STL" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="Cyan">
+        <color rgba="0.91 0.91 0.88 1.0"/>
+      </material>
+    </visual>
+  </link>
+
+  <joint name="CAM_support_joint" type="fixed">
+    <origin rpy="0 ${0.244} 1.57" xyz="${-0.021 + 0.03 - 0.01} ${-0.027 + 0.03 + 0.015} ${0.205 - 0.0086}"/>
+    <parent link="wrist_2_link"/>
+    <child link="CAM_support_link"/> 
+  </joint>
+
+  ########################################
+  # Realsense code
+  ########################################
+  <sensor_d435 parent="CAM_support_link">
+    <origin xyz="-0.0277 -0.002 -0.0075" rpy="0 0 0"/>
+  </sensor_d435>
+
+  <link name="d435_realsense"/>
+  <joint name="wrist3_camera" type="fixed">
+    <parent link="wrist_3_link"/>
+    <child link="d435_realsense"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+  </joint>
 
 
   ########################################
