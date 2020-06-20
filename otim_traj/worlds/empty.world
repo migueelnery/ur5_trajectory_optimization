@@ -12,6 +12,10 @@
       <pose> 0 0 0 0 0 0 </pose>
     </include>
     <include>
+      <uri>model://object</uri>
+      <pose> -0.55 0 1.23 0 0 0 </pose>
+    </include>
+    <include>
       <uri>model://makerbot</uri>
       <pose>-0.55 0 1.38 0 0 1.571</pose>
     </include>

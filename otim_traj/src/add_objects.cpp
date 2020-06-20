@@ -52,30 +52,96 @@ int main(int argc, char** argv)
     collision_objects.primitive_poses.push_back(table_pose);
     collision_objects.operation = collision_objects.ADD;
 
+    // Define makerbot components
+    shape_msgs::SolidPrimitive maker1;
+    maker1.type = maker1.BOX;
+    maker1.dimensions.resize(3);
+    maker1.dimensions[0] = 0.4;
+    maker1.dimensions[1] = 0.02;
+    maker1.dimensions[2] = 0.5;
+
+    shape_msgs::SolidPrimitive maker2;
+    maker2.type = maker2.BOX;
+    maker2.dimensions.resize(3);
+    maker2.dimensions[0] = 0.4;
+    maker2.dimensions[1] = 0.42;
+    maker2.dimensions[2] = 0.02;
+
+    //Define positions
+    geometry_msgs::Pose maker1L_pose;
+    maker1L_pose.orientation.w = 1.0;
+    maker1L_pose.position.x = -0.8;
+    maker1L_pose.position.y = -0.21;
+    maker1L_pose.position.z = 0.25;
+
+    geometry_msgs::Pose maker1R_pose;
+    maker1R_pose.orientation.w = 1.0;
+    maker1R_pose.position.x = -0.8;
+    maker1R_pose.position.y = 0.22;
+    maker1R_pose.position.z = 0.25;
+
+    geometry_msgs::Pose maker2D_pose;
+    maker2D_pose.orientation.w = 1.0;
+    maker2D_pose.position.x = -0.8;
+    maker2D_pose.position.y = 0.0;
+    maker2D_pose.position.z = 0.15;
+
+    geometry_msgs::Pose maker2U_pose;
+    maker2U_pose.orientation.w = 1.0;
+    maker2U_pose.position.x = -0.8;
+    maker2U_pose.position.y = 0.0;
+    maker2U_pose.position.z = 0.35;
+
+    //Define collision objects
+    moveit_msgs::CollisionObject maker1L_collision;
+    maker1L_collision.id = "maker1L";
+    maker1L_collision.header.frame_id = "world";
+    maker1L_collision.primitives.push_back(maker1);
+    maker1L_collision.primitive_poses.push_back(maker1L_pose);
+    maker1L_collision.operation = collision_objects.ADD;   
+
+    moveit_msgs::CollisionObject maker1R_collision;
+    maker1R_collision.id = "maker1R";
+    maker1R_collision.header.frame_id = "world";
+    maker1R_collision.primitives.push_back(maker1);
+    maker1R_collision.primitive_poses.push_back(maker1R_pose);
+    maker1R_collision.operation = collision_objects.ADD;   
+
+    moveit_msgs::CollisionObject maker2D_collision;
+    maker2D_collision.id = "maker2D";
+    maker2D_collision.header.frame_id = "world";
+    maker2D_collision.primitives.push_back(maker2);
+    maker2D_collision.primitive_poses.push_back(maker2D_pose);
+    maker2D_collision.operation = collision_objects.ADD;   
+
+    moveit_msgs::CollisionObject maker2U_collision;
+    maker2U_collision.id = "maker2U";
+    maker2U_collision.header.frame_id = "world";
+    maker2U_collision.primitives.push_back(maker2);
+    maker2U_collision.primitive_poses.push_back(maker2U_pose);
+    maker2U_collision.operation = collision_objects.ADD;   
+
+    // Define A Cylinder
+    shape_msgs::SolidPrimitive object1;
+    object1.type = object1.CYLINDER;
+    object1.dimensions.resize(2);
+    object1.dimensions[0] = 0.12; // height
+    object1.dimensions[1] = 0.02; // radius
+    // Define cylinder position
+    geometry_msgs::Pose object1_pose;
+    object1_pose.orientation.w = 1.0;
+    object1_pose.position.x = -0.85; //-0.85
+    object1_pose.position.y = 0.0; 
+    object1_pose.position.z = 0.21;  //0.2
 
 
-    // // Define A Cylinder
-    // shape_msgs::SolidPrimitive coca_can;
-    // coca_can.type = coca_can.CYLINDER;
-    // coca_can.dimensions.resize(2);
-    // coca_can.dimensions[0] = 0.13; // height
-    // coca_can.dimensions[1] = 0.036; // radius
-    // // Define coca can position
-    // geometry_msgs::Pose coca_can_pose;
-    // coca_can_pose.orientation.w = 1.0;
-    // coca_can_pose.position.x = 0.7;
-    // coca_can_pose.position.y = 0.0;
-    // coca_can_pose.position.z = coca_can.dimensions[0]/2;
-
-
-    // // Define attached objects
-    // moveit_msgs::AttachedCollisionObject attached_objects;
-    // attached_objects.link_name = "j2n6s300_end_effector";
-    // attached_objects.object.header.frame_id = "root";
-    // attached_objects.object.id = "cylinder";
-    // attached_objects.object.primitives.push_back(coca_can);
-    // attached_objects.object.primitive_poses.push_back(coca_can_pose);
-    // attached_objects.object.operation = attached_objects.object.ADD;
+    // Define collision2 objects
+    moveit_msgs::CollisionObject collision_objects2;
+    collision_objects2.id = "object";
+    collision_objects2.header.frame_id = "world";
+    collision_objects2.primitives.push_back(object1);
+    collision_objects2.primitive_poses.push_back(object1_pose);
+    collision_objects2.operation = collision_objects.ADD;
 
 
     // Add all objects to environment
@@ -83,6 +149,11 @@ int main(int argc, char** argv)
     moveit_msgs::PlanningScene work_scene;
     // work_scene.world.collision_objects.push_back(attached_objects.object);
     work_scene.world.collision_objects.push_back(collision_objects);
+    work_scene.world.collision_objects.push_back(maker1L_collision);
+    work_scene.world.collision_objects.push_back(maker1R_collision);
+    work_scene.world.collision_objects.push_back(maker2D_collision);
+    work_scene.world.collision_objects.push_back(maker2U_collision);
+    work_scene.world.collision_objects.push_back(collision_objects2);
     work_scene.is_diff = true;
     pub_work_scene.publish(work_scene);
     ros::WallDuration(1).sleep();
