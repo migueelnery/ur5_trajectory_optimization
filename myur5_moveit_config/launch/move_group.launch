@@ -45,7 +45,7 @@
 
   <!-- Planning Functionality -->
   <include ns="move_group" file="$(find myur5_moveit_config)/launch/planning_pipeline.launch.xml">
-    <arg name="pipeline" value="$(arg pipeline)" />
+    <arg name="pipeline" value="stomp" />
   </include>
 
   <!-- Trajectory Execution Functionality -->

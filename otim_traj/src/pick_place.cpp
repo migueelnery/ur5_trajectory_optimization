@@ -51,8 +51,8 @@ void openGripper(trajectory_msgs::JointTrajectory& posture)
   // BEGIN_SUB_TUTORIAL open_gripper
   /* Add both finger joints of panda robot. */
   posture.joint_names.resize(2);
-  posture.joint_names[0] = "robotiq_85_left_finger_tip_joint";
-  posture.joint_names[1] = "robotiq_85_right_finger_tip_joint";
+  posture.joint_names[0] = "robotiq_85_left_finger_joint";
+  posture.joint_names[1] = "robotiq_85_right_finger_joint";
 
   /* Set them as open, wide enough for the object to fit. */
   posture.points.resize(1);
@@ -68,8 +68,8 @@ void closedGripper(trajectory_msgs::JointTrajectory& posture)
   // BEGIN_SUB_TUTORIAL closed_gripper
   /* Add both finger joints of panda robot. */
   posture.joint_names.resize(2);
-  posture.joint_names[0] = "robotiq_85_left_finger_tip_joint";
-  posture.joint_names[1] = "robotiq_85_right_finger_tip_joint";
+  posture.joint_names[0] = "robotiq_85_left_finger_joint";
+  posture.joint_names[1] = "robotiq_85_right_finger_joint";
 
   /* Set them as closed. */
   posture.points.resize(1);
@@ -97,11 +97,11 @@ void pick(moveit::planning_interface::MoveGroupInterface& move_group)
   // extra padding)
   grasps[0].grasp_pose.header.frame_id = "base_link";
   tf2::Quaternion orientation;
-  orientation.setRPY(-M_PI / 2, -M_PI / 4, -M_PI / 2);
+  orientation.setRPY(-M_PI, 0, M_PI / 2);
   grasps[0].grasp_pose.pose.orientation = tf2::toMsg(orientation);
-  grasps[0].grasp_pose.pose.position.x = 0.415;
-  grasps[0].grasp_pose.pose.position.y = 0;
-  grasps[0].grasp_pose.pose.position.z = 0.5;
+  grasps[0].grasp_pose.pose.position.x = 0.816;
+  grasps[0].grasp_pose.pose.position.y = 0.200;
+  grasps[0].grasp_pose.pose.position.z = 0;
 
   // Setting pre-grasp approach
   // ++++++++++++++++++++++++++
@@ -118,8 +118,8 @@ void pick(moveit::planning_interface::MoveGroupInterface& move_group)
   grasps[0].post_grasp_retreat.direction.header.frame_id = "base_link";
   /* Direction is set as positive z axis */
   grasps[0].post_grasp_retreat.direction.vector.z = 1.0;
-  grasps[0].post_grasp_retreat.min_distance = 0.1;
-  grasps[0].post_grasp_retreat.desired_distance = 0.25;
+  grasps[0].post_grasp_retreat.min_distance = 0.05;
+  grasps[0].post_grasp_retreat.desired_distance = 0.1;
 
   // Setting posture of eef before grasp
   // +++++++++++++++++++++++++++++++++++
@@ -134,7 +134,7 @@ void pick(moveit::planning_interface::MoveGroupInterface& move_group)
 
   // BEGIN_SUB_TUTORIAL pick3
   // Set support surface as table1.
-  move_group.setSupportSurfaceName("maker2D");
+  move_group.setSupportSurfaceName("makerD");
   // Call pick to pick up the object using the grasps given
   move_group.pick("object", grasps);
   // END_SUB_TUTORIAL
@@ -158,9 +158,9 @@ void place(moveit::planning_interface::MoveGroupInterface& group)
   place_location[0].place_pose.pose.orientation = tf2::toMsg(orientation);
 
   /* While placing it is the exact location of the center of the object. */
-  place_location[0].place_pose.pose.position.x = 0;
-  place_location[0].place_pose.pose.position.y = 0.5;
-  place_location[0].place_pose.pose.position.z = 0.5;
+  place_location[0].place_pose.pose.position.x = -0.2;
+  place_location[0].place_pose.pose.position.y = 0.2;
+  place_location[0].place_pose.pose.position.z = 0.1;
 
   // Setting pre-place approach
   // ++++++++++++++++++++++++++
@@ -192,6 +192,160 @@ void place(moveit::planning_interface::MoveGroupInterface& group)
   // END_SUB_TUTORIAL
 }
 
+void addCollisionObjects(moveit::planning_interface::PlanningSceneInterface& planning_scene_interface)
+{
+  // BEGIN_SUB_TUTORIAL table1
+  //
+  // Creating Environment
+  // ^^^^^^^^^^^^^^^^^^^^
+  // Create vector to hold 3 collision objects.
+  std::vector<moveit_msgs::CollisionObject> collision_objects;
+  collision_objects.resize(6);
+
+  // Add the table.
+  collision_objects[0].id = "table";
+  collision_objects[0].header.frame_id = "world";
+
+  /* Define the primitive and its dimensions. */
+  collision_objects[0].primitives.resize(1);
+  collision_objects[0].primitives[0].type = collision_objects[0].primitives[0].BOX;
+  collision_objects[0].primitives[0].dimensions.resize(3);
+  collision_objects[0].primitives[0].dimensions[0] = 1.7;
+  collision_objects[0].primitives[0].dimensions[1] = 0.8;
+  collision_objects[0].primitives[0].dimensions[2] = 0.03;
+
+  /* Define the pose of the table. */
+  collision_objects[0].primitive_poses.resize(1);
+  collision_objects[0].primitive_poses[0].position.x = -0.35;
+  collision_objects[0].primitive_poses[0].position.y = 0;
+  collision_objects[0].primitive_poses[0].position.z = -0.02;
+  collision_objects[0].primitive_poses[0].orientation.w = 1.0;
+  // END_SUB_TUTORIAL
+
+  collision_objects[0].operation = collision_objects[0].ADD;
+
+  // BEGIN_SUB_TUTORIAL makerbot
+  // Add makerbot.
+  collision_objects[1].id = "makerL";
+  collision_objects[1].header.frame_id = "world";
+
+  /* Define the primitive and its dimensions. */
+  collision_objects[1].primitives.resize(1);
+  collision_objects[1].primitives[0].type = collision_objects[1].primitives[0].BOX;
+  collision_objects[1].primitives[0].dimensions.resize(3);
+  collision_objects[1].primitives[0].dimensions[0] = 0.4;
+  collision_objects[1].primitives[0].dimensions[1] = 0.02;
+  collision_objects[1].primitives[0].dimensions[2] = 0.5;
+
+  /* Define the pose. */
+  collision_objects[1].primitive_poses.resize(1);
+  collision_objects[1].primitive_poses[0].position.x = -0.8;
+  collision_objects[1].primitive_poses[0].position.y = -0.21;
+  collision_objects[1].primitive_poses[0].position.z = 0.25;
+  collision_objects[1].primitive_poses[0].orientation.w = 1.0;
+  // END_SUB_TUTORIAL
+
+  collision_objects[1].operation = collision_objects[1].ADD;
+
+  // BEGIN_SUB_TUTORIAL maker
+  // Add makerbot
+  collision_objects[2].header.frame_id = "world";
+  collision_objects[2].id = "makerR";
+
+  /* Define the primitive and its dimensions. */
+  collision_objects[2].primitives.resize(1);
+  collision_objects[2].primitives[0].type = collision_objects[1].primitives[0].BOX;
+  collision_objects[2].primitives[0].dimensions.resize(3);
+  collision_objects[2].primitives[0].dimensions[0] = 0.4;
+  collision_objects[2].primitives[0].dimensions[1] = 0.02;
+  collision_objects[2].primitives[0].dimensions[2] = 0.5;
+
+  /* Define the pose. */
+  collision_objects[2].primitive_poses.resize(1);
+  collision_objects[2].primitive_poses[0].position.x = -0.8;
+  collision_objects[2].primitive_poses[0].position.y = 0.22;
+  collision_objects[2].primitive_poses[0].position.z = 0.25;
+  collision_objects[2].primitive_poses[0].orientation.w = 1.0;
+  // END_SUB_TUTORIAL
+
+  collision_objects[2].operation = collision_objects[2].ADD;
+
+    // BEGIN_SUB_TUTORIAL maker
+  // Add makerbot
+  collision_objects[3].header.frame_id = "world";
+  collision_objects[3].id = "makerD";
+
+  /* Define the primitive and its dimensions. */
+  collision_objects[3].primitives.resize(1);
+  collision_objects[3].primitives[0].type = collision_objects[1].primitives[0].BOX;
+  collision_objects[3].primitives[0].dimensions.resize(3);
+  collision_objects[3].primitives[0].dimensions[0] = 0.4;
+  collision_objects[3].primitives[0].dimensions[1] = 0.42;
+  collision_objects[3].primitives[0].dimensions[2] = 0.02;
+
+  /* Define the pose. */
+  collision_objects[3].primitive_poses.resize(1);
+  collision_objects[3].primitive_poses[0].position.x = -0.8;
+  collision_objects[3].primitive_poses[0].position.y = 0.0;
+  collision_objects[3].primitive_poses[0].position.z = 0.15;
+  collision_objects[3].primitive_poses[0].orientation.w = 1.0;
+  // END_SUB_TUTORIAL
+
+  collision_objects[3].operation = collision_objects[3].ADD;
+
+
+    // BEGIN_SUB_TUTORIAL maker
+  // Add makerbot
+  collision_objects[4].header.frame_id = "world";
+  collision_objects[4].id = "makerU";
+
+  /* Define the primitive and its dimensions. */
+  collision_objects[4].primitives.resize(1);
+  collision_objects[4].primitives[0].type = collision_objects[1].primitives[0].BOX;
+  collision_objects[4].primitives[0].dimensions.resize(3);
+  collision_objects[4].primitives[0].dimensions[0] = 0.4;
+  collision_objects[4].primitives[0].dimensions[1] = 0.42;
+  collision_objects[4].primitives[0].dimensions[2] = 0.02;
+
+  /* Define the pose. */
+  collision_objects[4].primitive_poses.resize(1);
+  collision_objects[4].primitive_poses[0].position.x = -0.8;
+  collision_objects[4].primitive_poses[0].position.y = 0.0;
+  collision_objects[4].primitive_poses[0].position.z = 0.35;
+  collision_objects[4].primitive_poses[0].orientation.w = 1.0;
+  // END_SUB_TUTORIAL
+
+  collision_objects[4].operation = collision_objects[4].ADD;
+
+
+    // BEGIN_SUB_TUTORIAL object
+  // Add object
+  collision_objects[5].header.frame_id = "world";
+  collision_objects[5].id = "object";
+
+  /* Define the primitive and its dimensions. */
+  collision_objects[5].primitives.resize(1);
+  collision_objects[5].primitives[0].type = collision_objects[1].primitives[0].BOX;
+  collision_objects[5].primitives[0].dimensions.resize(3);
+  collision_objects[5].primitives[0].dimensions[0] = 0.02;
+  collision_objects[5].primitives[0].dimensions[1] = 0.02;
+  collision_objects[5].primitives[0].dimensions[2] = 0.12;
+
+  /* Define the pose. */
+  collision_objects[5].primitive_poses.resize(1);
+  collision_objects[5].primitive_poses[0].position.x = -0.85;
+  collision_objects[5].primitive_poses[0].position.y = 0.0;
+  collision_objects[5].primitive_poses[0].position.z = 0.21;
+  collision_objects[5].primitive_poses[0].orientation.w = 1.0;
+  // END_SUB_TUTORIAL
+
+  collision_objects[5].operation = collision_objects[5].ADD;
+
+
+
+  planning_scene_interface.applyCollisionObjects(collision_objects);
+}
+
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "ur5_arm_pick_place");
@@ -202,8 +356,9 @@ int main(int argc, char** argv)
   ros::WallDuration(1.0).sleep();
   moveit::planning_interface::PlanningSceneInterface planning_scene_interface;
   moveit::planning_interface::MoveGroupInterface group("manipulator");
-  group.setPlanningTime(45.0);
+  // group.setPlanningTime(45.0);
 
+  addCollisionObjects(planning_scene_interface);
 
   // Wait a bit for ROS things to initialize
   ros::WallDuration(1.0).sleep();
