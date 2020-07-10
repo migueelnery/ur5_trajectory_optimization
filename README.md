@@ -1,0 +1,7 @@
+# ur5_stomp_pickplace
+
+universal_robot
+robotiq
+realsense-ros
+realsense_gazebo_plugin
+openrave_catkin
