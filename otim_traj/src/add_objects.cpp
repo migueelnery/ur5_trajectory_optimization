@@ -70,25 +70,25 @@ int main(int argc, char** argv)
     //Define positions
     geometry_msgs::Pose maker1L_pose;
     maker1L_pose.orientation.w = 1.0;
-    maker1L_pose.position.x = -0.91;
+    maker1L_pose.position.x = -0.73;
     maker1L_pose.position.y = -0.21;
     maker1L_pose.position.z = 0.25;
 
     geometry_msgs::Pose maker1R_pose;
     maker1R_pose.orientation.w = 1.0;
-    maker1R_pose.position.x = -0.91;
+    maker1R_pose.position.x = -0.73;
     maker1R_pose.position.y = 0.22;
     maker1R_pose.position.z = 0.25;
 
     geometry_msgs::Pose maker2D_pose;
     maker2D_pose.orientation.w = 1.0;
-    maker2D_pose.position.x = -0.91;
+    maker2D_pose.position.x = -0.80;
     maker2D_pose.position.y = 0.0;
     maker2D_pose.position.z = 0.15;
 
     geometry_msgs::Pose maker2U_pose;
     maker2U_pose.orientation.w = 1.0;
-    maker2U_pose.position.x = -0.91;
+    maker2U_pose.position.x = -0.80;
     maker2U_pose.position.y = 0.0;
     maker2U_pose.position.z = 0.35;
 
@@ -130,7 +130,7 @@ int main(int argc, char** argv)
     // Define cylinder position
     geometry_msgs::Pose object1_pose;
     object1_pose.orientation.w = 1.0;
-    object1_pose.position.x = -0.9; //-0.85
+    object1_pose.position.x = -0.75; //-0.85
     object1_pose.position.y = 0.0; 
     object1_pose.position.z = 0.21;  //0.2
 
