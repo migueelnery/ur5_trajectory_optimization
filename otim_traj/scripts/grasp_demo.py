@@ -61,9 +61,9 @@ waypoints.append(copy.deepcopy(wpose))
 arm_group.execute(plan, wait=True)
 
 # #CLOSE GRIPPER
-joint_goal = hand_group.get_current_joint_values()
-joint_goal [2] = 0.4
-hand_group.go(joint_goal, wait=True)
+# joint_goal = hand_group.get_current_joint_values()
+# joint_goal [2] = 0.4
+# hand_group.go(joint_goal, wait=True)
 
 ##GO BACK
 

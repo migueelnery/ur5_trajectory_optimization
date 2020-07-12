@@ -67,13 +67,13 @@ add_executable(add_objects src/add_objects.cpp)
 target_link_libraries(add_objects ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 install(TARGETS add_objects DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
-add_executable(cylinder_detection src/cylinder_detection.cpp)
-target_link_libraries(cylinder_detection ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-install(TARGETS cylinder_detection DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+#add_executable(cylinder_detection src/cylinder_detection.cpp)
+#target_link_libraries(cylinder_detection ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+#install(TARGETS cylinder_detection DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
-add_executable(pick_place src/pick_place.cpp)
-target_link_libraries(pick_place ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-install(TARGETS pick_place DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+# add_executable(pick_place src/pick_place.cpp)
+# target_link_libraries(pick_place ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+# install(TARGETS pick_place DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 
 #############
