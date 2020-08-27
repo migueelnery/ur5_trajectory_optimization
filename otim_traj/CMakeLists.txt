@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(otim_traj)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+add_compile_options(-std=c++11)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -66,6 +66,11 @@ include_directories(
 add_executable(add_objects src/add_objects.cpp)
 target_link_libraries(add_objects ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 install(TARGETS add_objects DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
+add_executable(grasp_test src/grasp_test.cpp)
+target_link_libraries(grasp_test ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+install(TARGETS grasp_test DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
 
 #add_executable(cylinder_detection src/cylinder_detection.cpp)
 #target_link_libraries(cylinder_detection ${catkin_LIBRARIES} ${Boost_LIBRARIES})
