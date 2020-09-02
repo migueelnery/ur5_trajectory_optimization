@@ -47,9 +47,20 @@ arm_group.get_current_pose
 
 hand_group = moveit_commander.MoveGroupCommander("endeffector")
 # #OPEN GRIPPER
-joint_goal = hand_group.get_current_joint_values()
-joint_goal [2] = 0.3
-hand_group.go(joint_goal, wait=True)
+# joint_goal = hand_group.get_current_joint_values()
+joint_goal = [0.3, -0.3, 0.3, 0.3, -0.3, 0.3]
+hand_group.set_joint_value_target(joint_goal)
+plan_gripper = hand_group.plan()
+hand_group.go()
+# while plan_gripper[0]!= True:
+#     plan_gripper = hand_group.plan()
+
+
+# if plan_gripper[0]:
+#     traj = plan_gripper[1]
+#     hand_group.execute(traj, wait = True)
+
+
 
 ##Put the arm in the 1s grasp position
 # arm_group.set_start_state_to_current_state()
@@ -83,7 +94,7 @@ if plan[0]:
 arm_group.stop()
 arm_group.clear_pose_targets()
 
-rospy.sleep(1)
+# rospy.sleep(1)
 
 #GO FRONT
 
@@ -94,6 +105,8 @@ arm_group.set_pose_target(pose_target)
 plan1 = arm_group.plan(pose_target)
 
 while plan1[0] != True:
+    state = RobotState()
+    arm_group.set_start_state(state)
     plan1 = arm_group.plan(pose_target)
 
 if plan1[0]:
@@ -107,43 +120,51 @@ arm_group.clear_pose_targets()
 # waypoints = []
 # scale = 1.0
 # wpose = arm_group.get_current_pose().pose
-# # wpose.position.y -= scale * 0.15  # First move y 
-# wpose.position.z -= scale*0.65
+# wpose.position.x -= scale*0.1
 # waypoints.append(copy.deepcopy(wpose))
 
-
-
-# # We want the Cartesian path to be interpolated at a resolution of 1 cm
-# # which is why we will specify 0.01 as the eef_step in Cartesian
-# # translation.  We will disable the jump threshold by setting it to 0.0,
-# # ignoring the check for infeasible jumps in joint space, which is sufficient
-# # for this tutorial.
-# (plan, fraction) = arm_group.compute_cartesian_path(
+# (plan1, fraction) = arm_group.compute_cartesian_path(
 #                                    waypoints,   # waypoints to follow
-#                                    0.005,        # eef_step
+#                                    0.02,        # eef_step
 #                                    0.0, True)         # jump_threshold
 
-# arm_group.execute(plan, wait=True)
+# arm_group.execute(plan1, wait=True)
 
 # rospy.sleep(1)
 
 #CLOSE GRIPPER
-joint_goal = hand_group.get_current_joint_values()
-joint_goal [2] = 0.49  #0.49
-hand_group.go(joint_goal, wait=True)
+state = RobotState()
+arm_group.set_start_state(state)
+# joint_goal = hand_group.get_current_joint_values()
+joint_goal1 = [0.47, -0.47, 0.47, 0.47, -0.47, 0.47]  #0.49
+hand_group.set_joint_value_target(joint_goal1)
+plan_gripper1 = hand_group.plan()
+hand_group.go()
+
+# while plan_gripper1[0]!= True:
+#     plan_gripper1 = hand_group.plan()
+
+
+# if plan_gripper1[0]:
+#     traj = plan_gripper[1]
+#     hand_group.execute(traj, wait = True)
+
+joint_ver = hand_group.get_current_joint_values()
+if (joint_ver[0]-0.47) > 0.1:
+    print joint_ver
 
 ##GO UP
 state = RobotState()
 arm_group.set_start_state(state)
 pose_target.position.z += 0.02
 arm_group.set_pose_target(pose_target)
-plan1 = arm_group.plan(pose_target)
+plan2 = arm_group.plan(pose_target)
 
-while plan1[0] != True:
-    plan1 = arm_group.plan(pose_target)
+while plan2[0] != True:
+    plan2 = arm_group.plan(pose_target)
 
-if plan1[0]:
-    traj = plan1[1]
+if plan2[0]:
+    traj = plan2[1]
     arm_group.execute(traj, wait = True)
 
 arm_group.go()
@@ -157,15 +178,15 @@ state = RobotState()
 arm_group.set_start_state(state)
 pose_target.position.x += 0.18
 arm_group.set_pose_target(pose_target)
-plan1 = arm_group.plan(pose_target)
+plan3 = arm_group.plan(pose_target)
 
-while plan1[0] != True:
-    plan1 = arm_group.plan(pose_target)
+while plan3[0] != True:
+    plan3 = arm_group.plan(pose_target)
 
-if plan1[0]:
-    traj = plan1[1]
+if plan3[0]:
+    traj = plan3[1]
     arm_group.execute(traj, wait = True)
-
+    
 arm_group.go()
 arm_group.stop()
 arm_group.clear_pose_targets()

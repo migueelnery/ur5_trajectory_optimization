@@ -2,10 +2,10 @@ stomp/manipulator:
   group_name: manipulator
   optimization:
     num_timesteps: 50
-    num_iterations: 80
+    num_iterations: 100
     num_iterations_after_valid: 0
-    num_rollouts: 40
-    max_rollouts: 60
+    num_rollouts: 60
+    max_rollouts: 100
     initialization_method: 2 #[1 : LINEAR_INTERPOLATION, 2 : CUBIC_POLYNOMIAL, 3 : MININUM_CONTROL_COST, 4 : FILL_TRACJECTORY]
     control_cost_weight: 0.0
   task:
@@ -24,7 +24,7 @@ stomp/manipulator:
     noisy_filters:
       - class: stomp_moveit/JointLimits
         lock_start: True
-        lock_goal: False
+        lock_goal: True
       - class: stomp_moveit/MultiTrajectoryVisualization
         line_width: 0.02
         rgb: [255, 255, 0]

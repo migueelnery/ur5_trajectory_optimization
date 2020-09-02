@@ -149,10 +149,10 @@ int main(int argc, char** argv)
     moveit_msgs::PlanningScene work_scene;
     // work_scene.world.collision_objects.push_back(attached_objects.object);
     work_scene.world.collision_objects.push_back(collision_objects);
-    work_scene.world.collision_objects.push_back(maker1L_collision);
-    work_scene.world.collision_objects.push_back(maker1R_collision);
-    work_scene.world.collision_objects.push_back(maker2D_collision);
-    work_scene.world.collision_objects.push_back(maker2U_collision);
+    // work_scene.world.collision_objects.push_back(maker1L_collision);
+    // work_scene.world.collision_objects.push_back(maker1R_collision);
+    // work_scene.world.collision_objects.push_back(maker2D_collision);
+    // work_scene.world.collision_objects.push_back(maker2U_collision);
     // work_scene.world.collision_objects.push_back(collision_objects2);
     work_scene.is_diff = true;
     pub_work_scene.publish(work_scene);
