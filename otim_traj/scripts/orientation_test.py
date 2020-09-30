@@ -56,6 +56,16 @@ def main():
 
     # rospy.sleep(1)
 
+
+    #FAKE PLAN WITHOUT RESTRICTIONS  #
+    # state = RobotState()
+    # arm_group.set_start_state(state)
+    pose_target.position.z = 0.77
+    arm_group.set_pose_target(pose_target)  
+    plan_fake = arm_group.plan(pose_target)
+    while plan_fake[0] != True:
+        plan_fake = arm_group.plan(pose_target)
+
     pose = arm_group.get_current_pose()
     constraint = Constraints()
     constraint.name = "restricao"
@@ -63,7 +73,7 @@ def main():
     orientation_constraint.header = pose.header
     orientation_constraint.link_name = arm_group.get_end_effector_link()
     orientation_constraint.orientation = pose.pose.orientation
-    orientation_constraint.absolute_x_axis_tolerance = 0.5
+    orientation_constraint.absolute_x_axis_tolerance = 3.14
     orientation_constraint.absolute_y_axis_tolerance = 3.14
     orientation_constraint.absolute_z_axis_tolerance = 3.14
     orientation_constraint.weight = 1
@@ -71,8 +81,8 @@ def main():
     arm_group.set_path_constraints(constraint)
 
 
-    state = RobotState()
-    arm_group.set_start_state(state)
+    # state = RobotState()
+    # arm_group.set_start_state(state)
     pose_target.position.z = 0.77 # 0.77
     # pose_target.position.y = -0.11 # -0.11
     # pose_target.position.x = 0.31  # 0.31

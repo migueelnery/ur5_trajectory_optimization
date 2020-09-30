@@ -15,10 +15,10 @@
       <uri>model://object</uri>
       <pose> -0.43 0 1.23 0 0 0 </pose>
     </include>
-    <include>
+    <!-- <include>
       <uri>model://makerbot</uri>
       <pose>-0.45 0 1.38 0 0 1.571</pose>
-    </include>
+    </include> -->
     <physics type="ode">
       <gravity>0.000000 0.000000 -9.810000</gravity>
       <ode>

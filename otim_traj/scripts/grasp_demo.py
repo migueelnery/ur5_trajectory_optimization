@@ -73,7 +73,7 @@ pose_target.orientation.x = q[0]
 pose_target.orientation.y = q[1]
 pose_target.orientation.z = q[2]
 pose_target.orientation.w = q[3]
-pose_target.position.z = 0.23 #0.25
+pose_target.position.z = 0.10 #0.25
 pose_target.position.y = 0.00 #0.00
 pose_target.position.x = -0.45  #-0.45
 arm_group.set_pose_target(pose_target)
@@ -136,7 +136,7 @@ arm_group.clear_pose_targets()
 state = RobotState()
 arm_group.set_start_state(state)
 # joint_goal = hand_group.get_current_joint_values()
-joint_goal1 = [0.47, -0.47, 0.47, 0.47, -0.47, 0.47]  #0.49
+joint_goal1 = [0.48, -0.48, 0.48, 0.48, -0.48, 0.48]  #0.49
 hand_group.set_joint_value_target(joint_goal1)
 plan_gripper1 = hand_group.plan()
 hand_group.go()
