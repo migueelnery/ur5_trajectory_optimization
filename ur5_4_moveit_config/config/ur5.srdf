@@ -10,48 +10,53 @@
     <!--CHAINS: When a chain is specified, all the links along the chain (including endpoints) are included in the group. Additionally, all the joints that are parents to included links are also included. This means that joints along the chain and the parent joint of the base link are included in the group-->
     <!--SUBGROUPS: Groups can also be formed by referencing to already defined group names-->
     <group name="manipulator">
-        <joint name="virtual_joint" />
-        <joint name="world_joint" />
-        <joint name="shoulder_pan_joint" />
-        <joint name="shoulder_lift_joint" />
-        <joint name="elbow_joint" />
-        <joint name="wrist_1_joint" />
-        <joint name="wrist_2_joint" />
-        <joint name="wrist_3_joint" />
-         <joint name="wrist_3_link-tool0_fixed_joint" />
+        <chain base_link="base_link" tip_link="tool0" />
     </group>
-    <group name="gripper">
+    <group name="endeffector">
+        <link name="robotiq_coupler" />
         <link name="robotiq_85_base_link" />
+        <link name="robotiq_85_left_inner_knuckle_link" />
         <link name="robotiq_85_left_finger_tip_link" />
+        <link name="robotiq_85_left_knuckle_link" />
+        <link name="robotiq_85_left_finger_link" />
+        <link name="robotiq_85_right_inner_knuckle_link" />
         <link name="robotiq_85_right_finger_tip_link" />
-        <joint name="robotiq_85_left_knuckle_joint" />
-        <passive_joint name="robotiq_85_left_inner_knuckle_joint" />
-        <passive_joint name="robotiq_85_left_finger_tip_joint" />
-        <passive_joint name="robotiq_85_right_inner_knuckle_joint" />
-        <passive_joint name="robotiq_85_right_finger_tip_joint" />
-        <passive_joint name="robotiq_85_right_knuckle_joint" />
+        <link name="robotiq_85_right_knuckle_link" />
+        <link name="robotiq_85_right_finger_link" />
     </group>
     <!--GROUP STATES: Purpose: Define a named state for a particular group, in terms of joint values. This is useful to define states like 'folded arms'-->
     <group_state name="up" group="manipulator">
-        <joint name="elbow_joint" value="0.006" />
-        <joint name="shoulder_lift_joint" value="-1.5713" />
+        <joint name="elbow_joint" value="0" />
+        <joint name="shoulder_lift_joint" value="-1.5751" />
         <joint name="shoulder_pan_joint" value="0" />
-        <joint name="wrist_1_joint" value="-1.5714" />
+        <joint name="wrist_1_joint" value="0" />
         <joint name="wrist_2_joint" value="0" />
         <joint name="wrist_3_joint" value="0" />
     </group_state>
     <group_state name="ready" group="manipulator">
-        <joint name="elbow_joint" value="2.0807" />
-        <joint name="shoulder_lift_joint" value="-1.9092" />
+        <joint name="elbow_joint" value="2.0307" />
+        <joint name="shoulder_lift_joint" value="-2.0481" />
         <joint name="shoulder_pan_joint" value="0" />
-        <joint name="wrist_1_joint" value="-0.243" />
+        <joint name="wrist_1_joint" value="0" />
         <joint name="wrist_2_joint" value="0" />
         <joint name="wrist_3_joint" value="0" />
     </group_state>
+    <group_state name="open" group="endeffector">
+        <joint name="robotiq_85_left_knuckle_joint" value="0.0843" />
+    </group_state>
+    <group_state name="close" group="endeffector">
+        <joint name="robotiq_85_left_knuckle_joint" value="0.5899" />
+    </group_state>
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
-    <end_effector name="endeffector" parent_link="tool0" group="gripper" />
+    <end_effector name="endeffector" parent_link="tool0" group="endeffector" />
     <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
-    <virtual_joint name="virtual_joint" type="fixed" parent_frame="world" child_link="world"/>
+    <virtual_joint name="virtual_joint" type="fixed" parent_frame="world" child_link="world" />
+    <!--PASSIVE JOINT: Purpose: this element is used to mark joints that are not actuated-->
+    <passive_joint name="robotiq_85_left_inner_knuckle_joint" />
+    <passive_joint name="robotiq_85_left_finger_tip_joint" />
+    <passive_joint name="robotiq_85_right_inner_knuckle_joint" />
+    <passive_joint name="robotiq_85_right_finger_tip_joint" />
+    <passive_joint name="robotiq_85_right_knuckle_joint" />
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
     <disable_collisions link1="base_link" link2="shoulder_link" reason="Adjacent" />
     <disable_collisions link1="ee_link" link2="robotiq_85_base_link" reason="Never" />
