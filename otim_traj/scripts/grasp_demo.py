@@ -151,152 +151,156 @@ class ur5_grasp_demo:
 
         self.arm_group.execute(plan1, wait=True)
 
-        rospy.sleep(1)  
-    
+        rospy.sleep(1)
+
+    def check_planner(self):
+        planner = rospy.get_param("/move_group/default_planning_pipeline")
+        if planner == 'chomp':
+            print("still working")
+        else: 
+            ##Put the arm in the 1s grasp position
+            self.move_to_pose(0.0, 0.70, 0.44, -1.571, 0, 1.571)
+            self.move_to_pose(0.0, 0.70, 0.34, -1.571, 0, 1.571)
+            #self..move(down)
+            self.gripper_send_position_goal(close)
+            self.move_to_pose(0.0, 0.70, 0.50, -1.571, 0, 1.571)
+            # move(up)
+            self.move_to_pose(0.4, 0.70, 0.50, -1.571, 0, 1.571)
+            # move_to_pose(0.4, 0.70, 0.34, -1.571, 0, 1.571)
+            #move(down)
+            self.gripper_send_position_goal(open)
+            #GO FRONT
+
+            # state = RobotState()
+            # arm_group.set_start_state(state)
+            # pose_target.position.x -= 0.18
+            # arm_group.set_pose_target(pose_target)
+            # plan1 = arm_group.plan(pose_target)
+
+            # while plan1[0] != True:
+            #     state = RobotState()
+            #     arm_group.set_start_state(state)
+            #     plan1 = arm_group.plan(pose_target)
+
+            # if plan1[0]:
+            #     traj = plan1[1]
+            #     arm_group.execute(traj, wait = True)
+
+            # arm_group.go()
+            # arm_group.stop()
+            # arm_group.clear_pose_targets()
+
+            # # waypoints = []
+            # # scale = 1.0
+            # # wpose = arm_group.get_current_pose().pose
+            # # wpose.position.x -= scale*0.1
+            # # waypoints.append(copy.deepcopy(wpose))
+
+            # # (plan1, fraction) = arm_group.compute_cartesian_path(
+            # #                                    waypoints,   # waypoints to follow
+            # #                                    0.02,        # eef_step
+            # #                                    0.0, True)         # jump_threshold
+
+            # # arm_group.execute(plan1, wait=True)
+
+            # # rospy.sleep(1)
+
+            # #CLOSE GRIPPER
+            # state = RobotState()
+            # arm_group.set_start_state(state)
+            # # joint_goal = hand_group.get_current_joint_values()
+            # joint_goal1 = [0.48, -0.48, 0.48, 0.48, -0.48, 0.48]  #0.49
+            # hand_group.set_joint_value_target(joint_goal1)
+            # plan_gripper1 = hand_group.plan()
+            # hand_group.go()
+
+            # # while plan_gripper1[0]!= True:
+            # #     plan_gripper1 = hand_group.plan()
+
+
+            # # if plan_gripper1[0]:
+            # #     traj = plan_gripper[1]
+            # #     hand_group.execute(traj, wait = True)
+
+            # joint_ver = hand_group.get_current_joint_values()
+            # if (joint_ver[0]-0.47) > 0.1:
+            #     print joint_ver
+
+            # ##GO UP
+            # state = RobotState()
+            # arm_group.set_start_state(state)
+            # pose_target.position.z += 0.02
+            # arm_group.set_pose_target(pose_target)
+            # plan2 = arm_group.plan(pose_target)
+
+            # while plan2[0] != True:
+            #     plan2 = arm_group.plan(pose_target)
+
+            # if plan2[0]:
+            #     traj = plan2[1]
+            #     arm_group.execute(traj, wait = True)
+
+            # arm_group.go()
+            # arm_group.stop()
+            # arm_group.clear_pose_targets()
+
+
+            # #GO BACK
+
+            # state = RobotState()
+            # arm_group.set_start_state(state)
+            # pose_target.position.x += 0.18
+            # arm_group.set_pose_target(pose_target)
+            # plan3 = arm_group.plan(pose_target)
+
+            # while plan3[0] != True:
+            #     plan3 = arm_group.plan(pose_target)
+
+            # if plan3[0]:
+            #     traj = plan3[1]
+            #     arm_group.execute(traj, wait = True)
+                
+            # arm_group.go()
+            # arm_group.stop()
+            # arm_group.clear_pose_targets()
+
+            # waypoints = []
+            # wpose = arm_group.get_current_pose().pose
+
+            # wpose.position.z -= scale * 0.65
+            # waypoints.append(copy.deepcopy(wpose))
+
+            # # wpose.position.x += scale * 0.2
+            # # waypoints.append(copy.deepcopy(wpose))
+
+            # (plan, fraction) = arm_group.compute_cartesian_path(
+            #                                     waypoints,   # waypoints to follow
+            #                                     0.01,        # eef_step
+            #                                     0.0, True)         # jump_threshold
+
+            # arm_group.execute(plan, wait=True)
+
+
+
+            # pose_target.position.x = -0.58
+            # arm_group.set_pose_target(pose_target)
+            # plan1 = arm_group.go()
+
 def main():
+    global open
+    open = 'open'
+    global close
+    close = 'close'
     ur5_grasp = ur5_grasp_demo() 
     ur5_grasp.add_table_colision()
     # ur5_grasp.add_printer_colision()
     ur5_grasp.go_home()
-    open = 'open'
-    close = 'close'
     ur5_grasp.gripper_send_position_goal(open)
-    rospy.sleep(1)      
-    #Get planner name
-    planner = rospy.get_param("/move_group/default_planning_pipeline")
-    if planner == 'chomp':
-        print("still working")
-    else: 
-        ##Put the arm in the 1s grasp position
-        ur5_grasp.move_to_pose(0.0, 0.70, 0.44, -1.571, 0, 1.571)
-        ur5_grasp.move_to_pose(0.0, 0.70, 0.34, -1.571, 0, 1.571)
-        #ur5_grasp.move(down)
-        ur5_grasp.gripper_send_position_goal(close)
-        ur5_grasp.move_to_pose(0.0, 0.70, 0.50, -1.571, 0, 1.571)
-        # move(up)
-        ur5_grasp.move_to_pose(0.4, 0.70, 0.50, -1.571, 0, 1.571)
-        # move_to_pose(0.4, 0.70, 0.34, -1.571, 0, 1.571)
-        #move(down)
-        ur5_grasp.gripper_send_position_goal(open)
-        #GO FRONT
+    rospy.sleep(1)
+    ur5_grasp.check_planner()      
+   
 
-        # state = RobotState()
-        # arm_group.set_start_state(state)
-        # pose_target.position.x -= 0.18
-        # arm_group.set_pose_target(pose_target)
-        # plan1 = arm_group.plan(pose_target)
-
-        # while plan1[0] != True:
-        #     state = RobotState()
-        #     arm_group.set_start_state(state)
-        #     plan1 = arm_group.plan(pose_target)
-
-        # if plan1[0]:
-        #     traj = plan1[1]
-        #     arm_group.execute(traj, wait = True)
-
-        # arm_group.go()
-        # arm_group.stop()
-        # arm_group.clear_pose_targets()
-
-        # # waypoints = []
-        # # scale = 1.0
-        # # wpose = arm_group.get_current_pose().pose
-        # # wpose.position.x -= scale*0.1
-        # # waypoints.append(copy.deepcopy(wpose))
-
-        # # (plan1, fraction) = arm_group.compute_cartesian_path(
-        # #                                    waypoints,   # waypoints to follow
-        # #                                    0.02,        # eef_step
-        # #                                    0.0, True)         # jump_threshold
-
-        # # arm_group.execute(plan1, wait=True)
-
-        # # rospy.sleep(1)
-
-        # #CLOSE GRIPPER
-        # state = RobotState()
-        # arm_group.set_start_state(state)
-        # # joint_goal = hand_group.get_current_joint_values()
-        # joint_goal1 = [0.48, -0.48, 0.48, 0.48, -0.48, 0.48]  #0.49
-        # hand_group.set_joint_value_target(joint_goal1)
-        # plan_gripper1 = hand_group.plan()
-        # hand_group.go()
-
-        # # while plan_gripper1[0]!= True:
-        # #     plan_gripper1 = hand_group.plan()
-
-
-        # # if plan_gripper1[0]:
-        # #     traj = plan_gripper[1]
-        # #     hand_group.execute(traj, wait = True)
-
-        # joint_ver = hand_group.get_current_joint_values()
-        # if (joint_ver[0]-0.47) > 0.1:
-        #     print joint_ver
-
-        # ##GO UP
-        # state = RobotState()
-        # arm_group.set_start_state(state)
-        # pose_target.position.z += 0.02
-        # arm_group.set_pose_target(pose_target)
-        # plan2 = arm_group.plan(pose_target)
-
-        # while plan2[0] != True:
-        #     plan2 = arm_group.plan(pose_target)
-
-        # if plan2[0]:
-        #     traj = plan2[1]
-        #     arm_group.execute(traj, wait = True)
-
-        # arm_group.go()
-        # arm_group.stop()
-        # arm_group.clear_pose_targets()
-
-
-        # #GO BACK
-
-        # state = RobotState()
-        # arm_group.set_start_state(state)
-        # pose_target.position.x += 0.18
-        # arm_group.set_pose_target(pose_target)
-        # plan3 = arm_group.plan(pose_target)
-
-        # while plan3[0] != True:
-        #     plan3 = arm_group.plan(pose_target)
-
-        # if plan3[0]:
-        #     traj = plan3[1]
-        #     arm_group.execute(traj, wait = True)
-            
-        # arm_group.go()
-        # arm_group.stop()
-        # arm_group.clear_pose_targets()
-
-        # waypoints = []
-        # wpose = arm_group.get_current_pose().pose
-
-        # wpose.position.z -= scale * 0.65
-        # waypoints.append(copy.deepcopy(wpose))
-
-        # # wpose.position.x += scale * 0.2
-        # # waypoints.append(copy.deepcopy(wpose))
-
-        # (plan, fraction) = arm_group.compute_cartesian_path(
-        #                                     waypoints,   # waypoints to follow
-        #                                     0.01,        # eef_step
-        #                                     0.0, True)         # jump_threshold
-
-        # arm_group.execute(plan, wait=True)
-
-
-
-        # pose_target.position.x = -0.58
-        # arm_group.set_pose_target(pose_target)
-        # plan1 = arm_group.go()
-
-
-        roscpp_shutdown()
+    roscpp_shutdown()
 
 if __name__ == '__main__':
 	try:
