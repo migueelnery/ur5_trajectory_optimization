@@ -127,10 +127,16 @@ class ur5_grasp_demo:
         return joint_goal
                     
     def go_home(self):
-        home_target = self.arm_group.set_named_target("home")
-        plan = self.arm_group.plan(home_target)
-        traj_home = plan[1]
-        self.arm_group.execute(traj_home, wait = True)
+        self.arm_group.set_named_target("home")
+        i = 0
+        for i in range(5):
+            plan = self.arm_group.plan()
+            if plan[0]!= True:
+                i = i+1
+            else:
+                traj = plan[1]
+                self.arm_group.execute(traj, wait = True)
+                i=0
 
     def gripper_send_position_goal(self, srt):
         """Send position goal to the gripper"""
@@ -231,6 +237,8 @@ class ur5_grasp_demo:
         planner = rospy.get_param("/move_group/default_planning_pipeline")
         if planner == 'chomp':
             # print("still working")
+            self.go_home()
+            self.gripper_send_position_goal("open")
             joint_goal = self.compute_ik(0.0, 0.70, 0.33, -1.571, 0, 1.571)
             print("ik1 ok")
             self.move_to_joint(*joint_goal)
@@ -245,24 +253,39 @@ class ur5_grasp_demo:
             self.move_to_joint(0, 0, 0, 0, 0, 0)
         else: 
             ##Put the arm in the 1s grasp position
-            # self.move_to_pose(0.0, 0.70, 0.44, -1.571, 0, 1.571)
+            #object on table
+            self.go_home()
+            self.gripper_send_position_goal("open")
             self.move_to_pose(0.0, 0.70, 0.33, -1.571, 0, 1.571)
             # self.move(down)
             self.gripper_send_position_goal("close")
             self.move_to_pose(0.4, 0.70, 0.50, -1.571, 0, 1.571)
             self.move_to_pose(0.4, 0.70, 0.34, -1.571, 0, 1.571)
+            #pregrasp
             self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851)
+            #grasp
             self.move_to_joint(-1.49999877654, -2.84275634, -0.477780227084, -0.111686093081, 1.56994707603, -1.56997936866)
             self.gripper_send_position_goal("open")
-            self.go_home
+            self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851)
+            self.go_home()
             self.move_to_joint(0, 0, 0, 0, 0, 0)
-            
-
+            #object on printer
+            self.go_home()
+            #pregrasp
+            self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851)
+            #grasp
+            self.move_to_joint(-1.49999877654, -2.84275634, -0.477780227084, -0.111686093081, 1.56994707603, -1.56997936866)
+            # self.gripper_send_position_goal("close")
+            # self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851)
+            # #place object
+            # self.move_to_pose(0.0, 0.70, 0.33, -1.571, 0, 1.571)
+            # self.gripper_send_position_goal("open")
+            # #return home
+            # self.go_home()
+            # self.move_to_joint(0, 0, 0, 0, 0, 0)
 def main():
     ur5_grasp = ur5_grasp_demo()
     ur5_grasp.add_table_collision()
-    ur5_grasp.go_home() 
-    ur5_grasp.gripper_send_position_goal("open")
     ur5_grasp.check_planner()      
     roscpp_shutdown()
 
