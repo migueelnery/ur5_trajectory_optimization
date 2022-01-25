@@ -215,21 +215,31 @@ class ur5_grasp_demo:
 
     def move(self, srt):
         direction = srt
+        fraction = 0.0
+        attempts = 0
+        max_tries = 100
         waypoints = []
         scale = 1.0
         wpose = self.arm_group.get_current_pose().pose
         if direction == 'up':
-            wpose.position.z += scale*0.1
+            wpose.position.z += scale*0.04
         elif direction == 'down':
-            wpose.position.z -= scale*0.1
+            wpose.position.z -= scale*0.04
         waypoints.append(copy.deepcopy(wpose))
-
-        (plan1, fraction) = self.arm_group.compute_cartesian_path(
-                                            waypoints,   # waypoints to follow
-                                            0.05,        # eef_step
-                                            100.0, True)         # jump_threshold
-
-        self.arm_group.execute(plan1, wait=True)
+        
+        while fraction<1.0 and attempts<max_tries:
+            (plan1, fraction) = self.arm_group.compute_cartesian_path(
+                                                waypoints,   # waypoints to follow
+                                                0.01,        # eef_step
+                                                0.0,         # jump_threshold (5.0?)
+                                                True)        # avoid collisions 
+            attempts += 1
+        
+        if fraction == 1.0:
+            self.arm_group.execute(plan1, wait=True)
+            rospy.loginfo("Cartesian path executed")
+        else:
+            rospy.loginfo("Cartesian path failed")
 
         rospy.sleep(1)
 
@@ -252,8 +262,8 @@ class ur5_grasp_demo:
             self.gripper_send_position_goal("open")
             self.move_to_joint(0, 0, 0, 0, 0, 0)
         else: 
-            ##Put the arm in the 1s grasp position
-            #object on table
+            #Put the arm in the 1s grasp position
+            # object on table
             self.go_home()
             self.gripper_send_position_goal("open")
             self.move_to_pose(0.0, 0.70, 0.33, -1.571, 0, 1.571)
@@ -275,17 +285,19 @@ class ur5_grasp_demo:
             self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851)
             #grasp
             self.move_to_joint(-1.49999877654, -2.84275634, -0.477780227084, -0.111686093081, 1.56994707603, -1.56997936866)
-            # self.gripper_send_position_goal("close")
-            # self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851)
-            # #place object
-            # self.move_to_pose(0.0, 0.70, 0.33, -1.571, 0, 1.571)
-            # self.gripper_send_position_goal("open")
-            # #return home
-            # self.go_home()
-            # self.move_to_joint(0, 0, 0, 0, 0, 0)
+            self.move("down")
+            self.gripper_send_position_goal("close")
+            self.move("up")
+            self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851)
+            #place object
+            self.move_to_pose(0.0, 0.70, 0.33, -1.571, 0, 1.571)
+            self.gripper_send_position_goal("open")
+            #return home
+            self.go_home()
+            self.move_to_joint(0, 0, 0, 0, 0, 0)
 def main():
     ur5_grasp = ur5_grasp_demo()
-    ur5_grasp.add_table_collision()
+    # ur5_grasp.add_table_collision()
     ur5_grasp.check_planner()      
     roscpp_shutdown()
 
