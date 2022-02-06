@@ -126,8 +126,9 @@ class ur5_grasp_demo:
         joint_goal = joint_goal[:-6]
         return joint_goal
                     
-    def go_home(self):
-        self.arm_group.set_named_target("home")
+    def go_to(self, srt):
+        named_target = srt
+        self.arm_group.set_named_target(named_target)
         i = 0
         for i in range(5):
             plan = self.arm_group.plan()
@@ -222,15 +223,15 @@ class ur5_grasp_demo:
         scale = 1.0
         wpose = self.arm_group.get_current_pose().pose
         if direction == 'up':
-            wpose.position.z += scale*0.04
+            wpose.position.z += scale*0.03
         elif direction == 'down':
-            wpose.position.z -= scale*0.04
+            wpose.position.z -= scale*0.03
         waypoints.append(copy.deepcopy(wpose))
         
         while fraction<1.0 and attempts<max_tries:
             (plan1, fraction) = self.arm_group.compute_cartesian_path(
                                                 waypoints,   # waypoints to follow
-                                                0.01,        # eef_step
+                                                0.06,        # eef_step
                                                 0.0,         # jump_threshold (5.0?)
                                                 True)        # avoid collisions 
             attempts += 1
@@ -247,7 +248,7 @@ class ur5_grasp_demo:
         planner = rospy.get_param("/move_group/default_planning_pipeline")
         if planner == 'chomp':
             # print("still working")
-            self.go_home()
+            self.go_to("home")
             self.gripper_send_position_goal("open")
             joint_goal = self.compute_ik(0.0, 0.70, 0.33, -1.571, 0, 1.571)
             print("ik1 ok")
@@ -264,36 +265,38 @@ class ur5_grasp_demo:
         else: 
             #Put the arm in the 1s grasp position
             # object on table
-            self.go_home()
+            self.go_to("home")
+            self.go_to("ready")
             self.gripper_send_position_goal("open")
             self.move_to_pose(0.0, 0.70, 0.33, -1.571, 0, 1.571)
             # self.move(down)
             self.gripper_send_position_goal("close")
             self.move_to_pose(0.4, 0.70, 0.50, -1.571, 0, 1.571)
-            self.move_to_pose(0.4, 0.70, 0.34, -1.571, 0, 1.571)
+            self.move_to_pose(0.4, 0.65, 0.34, -1.571, 0, 1.571)
             #pregrasp
             self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851)
             #grasp
             self.move_to_joint(-1.49999877654, -2.84275634, -0.477780227084, -0.111686093081, 1.56994707603, -1.56997936866)
             self.gripper_send_position_goal("open")
             self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851)
-            self.go_home()
+            self.go_to("home")
             self.move_to_joint(0, 0, 0, 0, 0, 0)
             #object on printer
-            self.go_home()
-            #pregrasp
+            self.go_to("home")
+            # #pregrasp
             self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851)
-            #grasp
+            # #grasp
             self.move_to_joint(-1.49999877654, -2.84275634, -0.477780227084, -0.111686093081, 1.56994707603, -1.56997936866)
             self.move("down")
             self.gripper_send_position_goal("close")
             self.move("up")
             self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851)
             #place object
-            self.move_to_pose(0.0, 0.70, 0.33, -1.571, 0, 1.571)
+            self.move_to_pose(-0.1, 0.70, 0.34, -1.571, 0, 1.571)
+            self.move_to_pose(0.4, 0.65, 0.34, -1.571, 0, 1.571)
             self.gripper_send_position_goal("open")
             #return home
-            self.go_home()
+            self.go_to("home")
             self.move_to_joint(0, 0, 0, 0, 0, 0)
 def main():
     ur5_grasp = ur5_grasp_demo()
