@@ -21,6 +21,8 @@ from std_msgs.msg import String
 from moveit_commander.conversions import pose_to_list
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 from trac_ik_python.trac_ik import IK
+import os
+from moveit_commander.conversions import pose_to_list
 
 
 class ur5_grasp_demo:
@@ -47,6 +49,15 @@ class ur5_grasp_demo:
         # arm_group.get_current_pose
         # arm_group.get_current_state
         # arm_group.get_current_joint_values
+
+    def create_file(self, filename):
+        current_path = os.path.dirname(os.path.abspath(__file__))
+        fullpath = current_path + "/tests"
+        filepath = os.path.join(fullpath, filename)
+        if not os.path.exists(fullpath):
+            os.makedirs(fullpath)
+        self._file = open(filepath, "a")
+        
 
     def add_table_collision(self):
         self.scene.remove_world_object("table")
@@ -127,17 +138,24 @@ class ur5_grasp_demo:
         return joint_goal
                     
     def go_to(self, srt):
+        name = "go_to"
         named_target = srt
         self.arm_group.set_named_target(named_target)
         i = 0
-        for i in range(5):
+        j = 0
+        while i<5:
             plan = self.arm_group.plan()
             if plan[0]!= True:
                 i = i+1
             else:
                 traj = plan[1]
+                planning_time = plan[2]
+                self._file.write("SUCCESS \n" + name + " " + named_target + ": " +  str(planning_time) + "\n") 
+                self._file.write("Trajectory Duration (s): " + str(float(format(traj.joint_trajectory.points[-1].time_from_start))/1e9) + "\n")
                 self.arm_group.execute(traj, wait = True)
-                i=0
+                i=5
+        if plan[0]!=True:
+            self._file.write(name + " " + named_target + ": " +  "PLANNING ERROR "+ "\n") 
 
     def gripper_send_position_goal(self, srt):
         """Send position goal to the gripper"""
@@ -164,6 +182,8 @@ class ur5_grasp_demo:
         self.client_gripper.wait_for_result()
 
     def move_to_pose(self, x, y, z, R, P, Y):
+        name = "move_to_pose"
+        previous_pose = pose_to_list(self.arm_group.get_current_pose().pose)
         # arm_group.set_start_state_to_current_state()
         q = quaternion_from_euler(R, P, Y)
         pose_target = geometry_msgs.msg.Pose()
@@ -175,25 +195,32 @@ class ur5_grasp_demo:
         pose_target.position.y = y 
         pose_target.position.x = x  
         self.arm_group.set_pose_target(pose_target)
+        pose_target_ = pose_to_list(pose_target)
+        
 
         # Now, we call the planner to compute the plan and execute it.
         i = 0
-        for i in range(5):
+        while i<5:
             plan = self.arm_group.plan(pose_target)
             if plan[0]!= True:
                 i = i+1
             else:
                 traj = plan[1]
+                planning_time = plan[2]
+                self._file.write("SUCCESS \n" + name + " from " + str(previous_pose) + " to " + str(pose_target_) + ": " +  str(planning_time) + "\n") 
+                self._file.write("Trajectory Duration (s): " + str(float(format(traj.joint_trajectory.points[-1].time_from_start))/1e9) + "\n") 
                 self.arm_group.execute(traj, wait = True)
-                i=0
-                break
-
+                i=5
+        if plan[0]!=True:
+            self._file.write(name + " from " + str(previous_pose) + " to " + str(pose_target_) + ": " +  "PLANNING ERROR" + "\n")     
         self.arm_group.stop()
         self.arm_group.clear_pose_targets()
         rospy.sleep(1)
 
     def move_to_joint(self, j1, j2, j3, j4, j5, j6):
+        name = "move_to_joint"
         joint_goal = self.arm_group.get_current_joint_values()
+        current_joints = str(joint_goal)
         joint_goal[0] = j1
         joint_goal[1] = j2
         joint_goal[2] = j3
@@ -203,22 +230,28 @@ class ur5_grasp_demo:
         self.arm_group.set_joint_value_target(joint_goal)
         # Now, we call the planner to compute the plan and execute it.
         i = 0
-        for i in range(5):
+        while i<5:
             plan = self.arm_group.plan()
             if plan[0]!= True:
                 i = i+1
             else:
                 traj = plan[1]
+                planning_time = plan[2]
+                self._file.write("SUCCESS \n" + name + " from " + str(current_joints) + " to " + str(joint_goal) + ": " +  str(planning_time) + "\n") 
+                self._file.write("Trajectory Duration (s): " + str(float(format(traj.joint_trajectory.points[-1].time_from_start))/1e9) + "\n")
                 self.arm_group.execute(traj, wait = True)
-                i=0
-                break
+                i=5
+        if plan[0]!=True:
+            self._file.write(name + " from " + str(current_joints) + " to " + str(joint_goal) + ": " +  "PLANNING ERROR" + "\n") 
         rospy.sleep(1)
-
+    def get_planner(self):
+        planner = rospy.get_param("/move_group/default_planning_pipeline")
+        return planner
     def move(self, srt):
         direction = srt
         fraction = 0.0
         attempts = 0
-        max_tries = 100
+        max_tries = 20
         waypoints = []
         scale = 1.0
         wpose = self.arm_group.get_current_pose().pose
@@ -280,12 +313,12 @@ class ur5_grasp_demo:
             self.gripper_send_position_goal("open")
             self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851)
             self.go_to("home")
-            self.move_to_joint(0, 0, 0, 0, 0, 0)
+            # self.move_to_joint(0, 0, 0, 0, 0, 0)
             #object on printer
-            self.go_to("home")
-            # #pregrasp
+            # self.go_to("home")
+            #pregrasp
             self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851)
-            # #grasp
+            #grasp
             self.move_to_joint(-1.49999877654, -2.84275634, -0.477780227084, -0.111686093081, 1.56994707603, -1.56997936866)
             self.move("down")
             self.gripper_send_position_goal("close")
@@ -300,6 +333,10 @@ class ur5_grasp_demo:
             self.move_to_joint(0, 0, 0, 0, 0, 0)
 def main():
     ur5_grasp = ur5_grasp_demo()
+    timeStr = time.strftime('%m-%d-%Y_%H_%M_%S_%Z')
+    planner = ur5_grasp.get_planner()
+    filename = "{0}.{1}.{2}".format(planner,timeStr, "txt")
+    ur5_grasp.create_file(filename)
     # ur5_grasp.add_table_collision()
     ur5_grasp.check_planner()      
     roscpp_shutdown()

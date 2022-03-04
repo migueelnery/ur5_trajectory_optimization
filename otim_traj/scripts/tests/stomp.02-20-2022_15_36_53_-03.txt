@@ -1,0 +1,2 @@
+SUCCESS 
+go_to home: 0.24890366
