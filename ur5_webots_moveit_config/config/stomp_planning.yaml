@@ -1,12 +1,12 @@
 stomp/manipulator:
   group_name: manipulator
   optimization:
-    num_timesteps: 30 #50
-    num_iterations: 60 #100
+    num_timesteps: 50 #50
+    num_iterations: 100 #100
     num_iterations_after_valid: 0
     num_rollouts: 60
     max_rollouts: 100
-    initialization_method: 2 #[1 : LINEAR_INTERPOLATION, 2 : CUBIC_POLYNOMIAL, 3 : MININUM_CONTROL_COST, 4 : FILL_TRACJECTORY]
+    initialization_method: 1 #[1 : LINEAR_INTERPOLATION, 2 : CUBIC_POLYNOMIAL, 3 : MININUM_CONTROL_COST, 4 : FILL_TRACJECTORY]
     control_cost_weight: 0.0
   task:
     noise_generator:
