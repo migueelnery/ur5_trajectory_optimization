@@ -290,7 +290,6 @@ class ur5_grasp_demo:
     def check_planner(self):
         planner = rospy.get_param("/move_group/default_planning_pipeline")
         if planner == 'chomp':
-            # print("still working")
             self.gripper_send_position_goal("open")
             self.go_to("home")
             self.go_to("ready")
@@ -298,41 +297,41 @@ class ur5_grasp_demo:
             # print("ik1 ok")
             # print(joint_goal)
             # self.move_to_joint(*joint_goal)
-            self.move_to_joint(-1.3781493580974669, -2.172610821908544, -1.4556796010146842, -1.0842527868702971, 1.5707183491332233, -1.3774213803247992)
+            self.move_to_joint(-1.3781493580974669, -2.172610821908544, -1.4556796010146842, -1.0842527868702971, 1.5707183491332233, -1.3774213803247992) #sim
             self.gripper_send_position_goal("close")
             # joint_goal = self.compute_ik(0.4, 0.70, 0.50, -1.571, 0, 1.571)
             # print("ik2 ok")
             # self.move_to_joint(*joint_goal)
-            self.move_to_joint(-1.922959853269357, -2.371830785716463, -0.6645558021092874, -1.6760031517492138, 1.5706005352878785, -1.92316833815096)
+            self.move_to_joint(-1.922959853269357, -2.371830785716463, -0.6645558021092874, -1.6760031517492138, 1.5706005352878785, -1.92316833815096) #sim
             # joint_goal = self.compute_ik(0.4, 0.65, 0.34, -1.571, 0, 1.571)
             # print("ik3 ok")
             # self.move_to_joint(*joint_goal)
-            self.move_to_joint(-1.9459636479249252, -2.304801613701348, -1.1981926133427496, -1.2093890077668945, 1.5706105469043279, -1.9461771764045679)
+            self.move_to_joint(-1.9459636479249252, -2.304801613701348, -1.1981926133427496, -1.2093890077668945, 1.5706105469043279, -1.9461771764045679) # nao
             # #pregrasp
-            self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851)
+            self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851) #sim
             # #grasp
-            self.move_to_joint(-1.49999877654, -2.84275634, -0.477780227084, -0.111686093081, 1.56994707603, -1.56997936866)
+            self.move_to_joint(-1.49999877654, -2.84275634, -0.477780227084, -0.111686093081, 1.56994707603, -1.56997936866) #nao
             self.gripper_send_position_goal("open")
-            self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851)
-            self.go_to("home")
-            self.move_to_joint(0, 0, 0, 0, 0, 0)
+            self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851) #nao
+            self.go_to("home") #nao
+            self.move_to_joint(0, 0, 0, 0, 0, 0) #nao
             # # #object on printer
-            self.go_to("home")
+            self.go_to("home") #nao
             # # #pregrasp
-            self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851)
+            self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851) #sim
             # # #grasp
-            self.move_to_joint(-1.49999877654, -2.84275634, -0.477780227084, -0.111686093081, 1.56994707603, -1.56997936866)
+            self.move_to_joint(-1.49999877654, -2.84275634, -0.477780227084, -0.111686093081, 1.56994707603, -1.56997936866) #nao
             self.move("down")
             self.gripper_send_position_goal("close")
             self.move("up")
-            self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851)
+            self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851) #nao
             #place object
             # joint_goal = self.compute_ik(-0.1, 0.70, 0.34, -1.571, 0, 1.571)
             # self.move_to_joint(*joint_goal)
-            self.move_to_joint(-1.2382410195362379, -2.1770815903968836, -1.4195257850455416, -1.1159097620131329, 1.5706051297246038, -1.238442495010653)
+            self.move_to_joint(-1.2382410195362379, -2.1770815903968836, -1.4195257850455416, -1.1159097620131329, 1.5706051297246038, -1.238442495010653) #sim
             # joint_goal = self.compute_ik(0.4, 0.65, 0.34, -1.571, 0, 1.571)
             # self.move_to_joint(*joint_goal)
-            self.move_to_joint(-1.9459642312729857, -2.304787234076681, -1.1982143179740632, -1.2093797317569202, 1.5706053241015951, -1.9461775309413003)
+            self.move_to_joint(-1.9459642312729857, -2.304787234076681, -1.1982143179740632, -1.2093797317569202, 1.5706053241015951, -1.9461775309413003) #sim
             self.gripper_send_position_goal("open")
             # # #return home
             self.go_to("home")
@@ -343,12 +342,12 @@ class ur5_grasp_demo:
             self.go_to("home")
             self.gripper_send_position_goal("open")
             self.go_to("ready")
-            self.move_to_pose(0.0, 0.70, 0.33, -1.571, 0, 1.571)
+            self.move_to_pose(0.0, 0.70, 0.33, -1.571, 0, 1.571) #sim 
             self.gripper_send_position_goal("close")
-            self.move_to_pose(0.4, 0.70, 0.50, -1.571, 0, 1.571)
+            self.move_to_pose(0.4, 0.70, 0.50, -1.571, 0, 1.571) #sim 
             self.move_to_pose(0.4, 0.65, 0.34, -1.571, 0, 1.571)
             #pregrasp
-            self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851)
+            self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851) #sim 
             #grasp
             self.move_to_joint(-1.49999877654, -2.84275634, -0.477780227084, -0.111686093081, 1.56994707603, -1.56997936866)
             self.gripper_send_position_goal("open")
@@ -358,7 +357,7 @@ class ur5_grasp_demo:
             #object on printer
             self.go_to("home")
             #pregrasp
-            self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851)
+            self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851) #sim
             #grasp
             self.move_to_joint(-1.49999877654, -2.84275634, -0.477780227084, -0.111686093081, 1.56994707603, -1.56997936866)
             self.move("down")
@@ -366,8 +365,8 @@ class ur5_grasp_demo:
             self.move("up")
             self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851)
             #place object
-            self.move_to_pose(-0.1, 0.70, 0.34, -1.571, 0, 1.571)
-            self.move_to_pose(0.4, 0.65, 0.34, -1.571, 0, 1.571)
+            self.move_to_pose(-0.1, 0.70, 0.34, -1.571, 0, 1.571) #sim 
+            self.move_to_pose(0.4, 0.65, 0.34, -1.571, 0, 1.571) #sim 
             self.gripper_send_position_goal("open")
             #return home
             self.go_to("home")
