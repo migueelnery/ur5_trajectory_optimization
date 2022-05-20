@@ -7,7 +7,7 @@
 
 
   <!-- Load the URDF, SRDF and other .yaml configuration files on the param server -->
-  <include file="$(find ur5_5_moveit_config)/launch/planning_context.launch">
+  <include file="$(find ur5_webots_moveit_config)/launch/planning_context.launch">
     <arg name="load_robot_description" value="true"/>
   </include>
 
@@ -20,7 +20,7 @@
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
 
   <!-- Run the main MoveIt executable without trajectory execution (we do not have controllers configured by default) -->
-  <include file="$(find ur5_5_moveit_config)/launch/move_group.launch">
+  <include file="$(find ur5_webots_moveit_config)/launch/move_group.launch">
     <arg name="allow_trajectory_execution" value="true"/>
     <arg name="pipeline" value="$(arg pipeline)"/>
     <arg name="fake_execution" value="false"/>
@@ -32,6 +32,6 @@
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find ur5_5_moveit_config)/config/config.rviz"/>
 
   <!-- If database loading was enabled, start mongodb as well -->
-  <include file="$(find ur5_5_moveit_config)/launch/default_warehouse_db.launch" if="$(arg db)"/>
+  <include file="$(find ur5_webots_moveit_config)/launch/default_warehouse_db.launch" if="$(arg db)"/>
 
 </launch>
