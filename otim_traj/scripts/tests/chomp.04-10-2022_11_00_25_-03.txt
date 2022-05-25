@@ -1,0 +1,3 @@
+SUCCESS 
+go_to ready: 0.104416293
+Trajectory Duration (s): 5.615738375
