@@ -1,0 +1,12 @@
+SUCCESS 
+go_to home
+planning_time: 
+Trajectory Duration (s): 2.639886305
+SUCCESS 
+go_to ready
+planning_time: 
+Trajectory Duration (s): 2.63957966
+SUCCESS 
+move_to_pose from [-0.13417705977830205, 0.04099164694901648, 0.3861809428570339, 0.023951423053171394, -0.023850035250484385, 0.7082209312586558, 0.7051812658312763] to [-0.54, 0.13, 0.33, 0.0, 0.0, 0.70717878687206648, 0.70703476816784083]
+planning_time: 
+Trajectory Duration (s): 3.077991736

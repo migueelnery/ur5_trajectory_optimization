@@ -1,0 +1,3 @@
+SUCCESS 
+go_to home
+Trajectory Duration (s): 0.100024884

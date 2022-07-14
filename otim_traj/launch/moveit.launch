@@ -17,7 +17,7 @@
   </node>
   
   <!-- Given the published joint states, publish tf for the robot links -->
-  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
+  <!-- <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" /> -->
 
   <!-- Run the main MoveIt executable without trajectory execution (we do not have controllers configured by default) -->
   <include file="$(find ur5_webots_moveit_config)/launch/move_group.launch">
@@ -29,7 +29,7 @@
   </include>
 
   <!-- Run Rviz and load the default config to see the state of the move_group node -->
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find ur5_5_moveit_config)/config/config.rviz"/>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find ur5_webots_moveit_config)/config/config.rviz"/>
 
   <!-- If database loading was enabled, start mongodb as well -->
   <include file="$(find ur5_webots_moveit_config)/launch/default_warehouse_db.launch" if="$(arg db)"/>

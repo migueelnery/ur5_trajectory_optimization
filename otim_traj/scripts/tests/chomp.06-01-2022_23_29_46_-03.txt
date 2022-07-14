@@ -1,0 +1,4 @@
+SUCCESS 
+go_to home
+planning_time: 
+Trajectory Duration (s): 0.070968677

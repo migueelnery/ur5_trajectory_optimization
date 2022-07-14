@@ -23,7 +23,7 @@ joint_state_controller:
   type: joint_state_controller/JointStateController
   publish_rate: 50
 controller_list:
-  - name: arm_controller
+  - name: scaled_pos_joint_traj_controller
     action_ns: follow_joint_trajectory
     default: True
     type: FollowJointTrajectory
@@ -34,14 +34,14 @@ controller_list:
       - wrist_1_joint
       - wrist_2_joint
       - wrist_3_joint
-  - name: gripper_controller
-    action_ns: follow_joint_trajectory
-    default: True
-    type: FollowJointTrajectory
-    joints:
-      - finger_joint
-      - left_inner_knuckle_joint
-      - left_inner_finger_joint
-      - right_outer_knuckle_joint
-      - right_inner_knuckle_joint
-      - right_inner_finger_joint
+  # - name: gripper_controller
+  #   action_ns: follow_joint_trajectory
+  #   default: True
+  #   type: FollowJointTrajectory
+  #   joints:
+  #     - finger_joint
+  #     - left_inner_knuckle_joint
+  #     - left_inner_finger_joint
+  #     - right_outer_knuckle_joint
+  #     - right_inner_knuckle_joint
+  #     - right_inner_finger_joint
