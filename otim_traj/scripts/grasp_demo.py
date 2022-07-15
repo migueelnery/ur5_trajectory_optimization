@@ -65,7 +65,7 @@ class ur5_grasp_demo:
         p.header.frame_id = self.robot.get_planning_frame()
         p.pose.position.x = 0.
         p.pose.position.y = 0.4
-        p.pose.position.z = 0.
+        p.pose.position.z = -0.03
         rospy.sleep(1)
         self.scene.add_box("table", p, (1.0, 2.0, 0.01))
 
@@ -92,25 +92,8 @@ class ur5_grasp_demo:
 
     def add_printer_collision(self):
         #not used, actually using camera data in perception to get printer collision
-        # self.scene.remove_world_object("printer")
-        # self.scene.remove_world_object("printer_glass")
-        # p1 = PoseStamped()
-        # p2 = PoseStamped()
-        # p1.header.frame_id = self.robot.get_planning_frame()
-        # p2.header.frame_id = self.robot.get_planning_frame()
-        # p1.pose.position.x = 0.
-        # p1.pose.position.y = 1.17
-        # p1.pose.position.z = 0.
-        # p2.pose.orientation.x = -0.9269149
-        # p2.pose.orientation.y = 0.001037
-        # p2.pose.orientation.z = -0.0004393
-        # p2.pose.orientation.w = 0.3752699
-        # p2.pose.position.x = 0
-        # p2.pose.position.y = 1.
-        # p2.pose.position.z = 0.325
-        # rospy.sleep(1)
-        # self.scene.add_mesh("printer", p1, '/home/miguel/Downloads/printer1.stl', (1, 1, 1))
-        # self.scene.add_mesh("printer_glass", p2, '/home/miguel/Downloads/printer.stl', (1, 1, 1))
+        self.scene.remove_world_object("printer1")
+        self.scene.remove_world_object("printer2")
         self.add_box_collision("printer1", 0.50, 0.35, 0.15, 0.0, 1.17)
         self.add_box_collision("printer2", 0.50, 0.05, 0.50, 0.0, 1.27)
 
@@ -146,10 +129,6 @@ class ur5_grasp_demo:
         ik_request.constraints = constraints
         ik_request.robot_state = self.arm_group.get_current_state()
         self.resp = self.get_position_ik(ik_request)
-        # if self.resp.error_code.val != 1:
-        #     while self.resp.error_code.val != 1:
-        #         self.resp = self.get_position_ik(ik_request)
-        #         print("calculating ik")  
         while True:
             self.resp = self.get_position_ik(ik_request)
             print("calculating ik")
@@ -169,23 +148,13 @@ class ur5_grasp_demo:
             plan = self.arm_group.plan()
             if plan.joint_trajectory.points:
                 self.arm_group.execute(plan, wait = True)
-                self._file.write("SUCCESS \n" + name + " " + named_target + "\n") 
+                self._file.write("SUCCESS \n" + name + " " + named_target + "\nplanning_time: \n") 
                 self._file.write("Trajectory Duration (s): " + str(float(format(plan.joint_trajectory.points[-1].time_from_start))/1e9) + "\n")
                 i=5
             else:
                 i = i+1
-
-        #     if plan[0]!= True:
-        #         i = i+1
-        #     else:
-        #         traj = plan[1]
-        #         planning_time = plan[2]
-        #         self._file.write("SUCCESS \n" + name + " " + named_target + ": " +  str(planning_time) + "\n") 
-        #         self._file.write("Trajectory Duration (s): " + str(float(format(traj.joint_trajectory.points[-1].time_from_start))/1e9) + "\n")
-        #         self.arm_group.execute(traj, wait = True)
-        #         i=5
-        # if plan[0]!=True:
-        #     self._file.write(name + " " + named_target + ": " +  "PLANNING ERROR "+ "\n") 
+        if not plan.joint_trajectory.points:
+            self._file.write("PLANNING FAILED \n" + name + " " + named_target + "\n") 
 
     def gripper_send_position_goal(self, srt):
         """Send position goal to the gripper"""
@@ -213,6 +182,8 @@ class ur5_grasp_demo:
 
     def move_to_pose(self, x, y, z, R, P, Y):
         name = "move_to_pose"
+        self.arm_group.set_goal_position_tolerance(0.1)
+        self.arm_group.set_goal_orientation_tolerance(0.1)
         previous_pose = pose_to_list(self.arm_group.get_current_pose().pose)
         # arm_group.set_start_state_to_current_state()
         q = quaternion_from_euler(R, P, Y)
@@ -234,22 +205,13 @@ class ur5_grasp_demo:
             plan = self.arm_group.plan(pose_target)
             if plan.joint_trajectory.points:
                 self.arm_group.execute(plan, wait = True)
-                self._file.write("SUCCESS \n" + name + " from " + str(previous_pose) + " to " + str(pose_target_) + "\n") 
+                self._file.write("SUCCESS \n" + name + " from " + str(previous_pose) + " to " + str(pose_target_) + "\nplanning_time: \n") 
                 self._file.write("Trajectory Duration (s): " + str(float(format(plan.joint_trajectory.points[-1].time_from_start))/1e9) + "\n") 
                 i=5
             else:
                 i = i+1
-        #     if plan[0]!= True:
-        #         i = i+1
-        #     else:
-        #         traj = plan[1]
-        #         planning_time = plan[2]
-        #         self._file.write("SUCCESS \n" + name + " from " + str(previous_pose) + " to " + str(pose_target_) + ": " +  str(planning_time) + "\n") 
-        #         self._file.write("Trajectory Duration (s): " + str(float(format(traj.joint_trajectory.points[-1].time_from_start))/1e9) + "\n") 
-        #         self.arm_group.execute(traj, wait = True)
-        #         i=5
-        # if plan[0]!=True:
-        #     self._file.write(name + " from " + str(previous_pose) + " to " + str(pose_target_) + ": " +  "PLANNING ERROR" + "\n")     
+        if not plan.joint_trajectory.points:
+            self._file.write("PLANNING FAILED \n" + name + " from " + str(previous_pose) + " to " + str(pose_target_) + "\n")
         self.arm_group.stop()
         self.arm_group.clear_pose_targets()
         rospy.sleep(1)
@@ -271,28 +233,19 @@ class ur5_grasp_demo:
             plan = self.arm_group.plan()
             if plan.joint_trajectory.points:
                 self.arm_group.execute(plan, wait = True)
-                self._file.write("SUCCESS \n" + name + " from " + str(current_joints) + " to " + str(joint_goal) + "\n") 
+                self._file.write("SUCCESS \n" + name + " from " + str(current_joints) + " to " + str(joint_goal) + "\nplanning_time: \n") 
                 self._file.write("Trajectory Duration (s): " + str(float(format(plan.joint_trajectory.points[-1].time_from_start))/1e9) + "\n")
                 i=5
             else:
                 i = i+1
-        # while i<5:
-        #     plan = self.arm_group.plan()
-        #     if plan[0]!= True:
-        #         i = i+1
-        #     else:
-        #         traj = plan[1]
-        #         planning_time = plan[2]
-        #         self._file.write("SUCCESS \n" + name + " from " + str(current_joints) + " to " + str(joint_goal) + ": " +  str(planning_time) + "\n") 
-        #         self._file.write("Trajectory Duration (s): " + str(float(format(traj.joint_trajectory.points[-1].time_from_start))/1e9) + "\n")
-        #         self.arm_group.execute(traj, wait = True)
-        #         i=5
-        # if plan[0]!=True:
-        #     self._file.write(name + " from " + str(current_joints) + " to " + str(joint_goal) + ": " +  "PLANNING ERROR" + "\n") 
+        if not plan.joint_trajectory.points:
+            self._file.write("PLANNING FAILED \n" + name + " from " + str(current_joints) + " to " + str(joint_goal) + "\n")
         rospy.sleep(1)
+
     def get_planner(self):
         planner = rospy.get_param("/move_group/default_planning_pipeline")
         return planner
+
     def move(self, srt):
         direction = srt
         fraction = 0.0
@@ -324,100 +277,65 @@ class ur5_grasp_demo:
         rospy.sleep(1)
     
     def add_collisions(self):
-        self.add_cylinder_collision()
+        # self.add_cylinder_collision() 
         self.add_table_collision()
-        self.add_printer_collision()
-        #2
-        self.add_box_collision("box1", 0.1, 0.1, 0.1, -0.19, 0.68)
-        #3
-        self.add_box_collision("box2", 0.17, 0.17, 0.17, 0.2, 0.88)
-        #4
-        self.add_box_collision("box2", 0.17, 0.17, 0.34, 0.2, 0.88)
-
+        # self.add_printer_collision()
+        
     def check_planner(self):
         planner = rospy.get_param("/move_group/default_planning_pipeline")
         if planner == 'chomp':
-            # self.gripper_send_position_goal("open")
-            # self.go_to("home")
-            self.go_to("ready")
-            joint_goal = self.compute_ik(0.0, 0.75, 0.40, -1.571, 0, 1.571)
-            # print("ik1 ok")
-            # print(joint_goal)
-            # self.move_to_joint(*joint_goal)
-            # self.move_to_joint(-1.3781493580974669, -2.172610821908544, -1.4556796010146842, -1.0842527868702971, 1.5707183491332233, -1.3774213803247992) #sim
-            # self.gripper_send_position_goal("close")
-            # joint_goal = self.compute_ik(0.4, 0.70, 0.50, -1.571, 0, 1.571)
-            # print("ik2 ok")
-            # self.move_to_joint(*joint_goal)
-            # self.move_to_joint(-1.922959853269357, -2.371830785716463, -0.6645558021092874, -1.6760031517492138, 1.5706005352878785, -1.92316833815096) #sim
-            # joint_goal = self.compute_ik(0.4, 0.65, 0.34, -1.571, 0, 1.571)
-            # print("ik3 ok")
-            # self.move_to_joint(*joint_goal)
-            # self.move_to_joint(-1.9459636479249252, -2.304801613701348, -1.1981926133427496, -1.2093890077668945, 1.5706105469043279, -1.9461771764045679) # nao
-            # #pregrasp
-            # self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851) #sim
-            # #grasp
-            # self.move_to_joint(-1.49999877654, -2.84275634, -0.477780227084, -0.111686093081, 1.56994707603, -1.56997936866) #nao
-            # self.gripper_send_position_goal("open")
-            # self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851) #nao
-            # self.go_to("home") #nao
-            # self.move_to_joint(0, 0, 0, 0, 0, 0) #nao
-            # # #object on printer
-            # self.go_to("home") #nao
-            #pregrasp
-            # self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851) #sim
-            # # #grasp
-            # self.move_to_joint(-1.49999877654, -2.84275634, -0.477780227084, -0.111686093081, 1.56994707603, -1.56997936866) #nao
-            # self.move("down")
-            # self.gripper_send_position_goal("close")
-            # self.move("up")
-            # self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851) #nao
-            #place object
-            # joint_goal = self.compute_ik(-0.1, 0.70, 0.34, -1.571, 0, 1.571)
-            # self.move_to_joint(*joint_goal)
-            self.move_to_joint(-1.2382410195362379, -2.1770815903968836, -1.4195257850455416, -1.1159097620131329, 1.5706051297246038, -1.238442495010653) #sim
-            # joint_goal = self.compute_ik(0.4, 0.65, 0.34, -1.571, 0, 1.571)
-            # self.move_to_joint(*joint_goal)
-            self.move_to_joint(-1.9459642312729857, -2.304787234076681, -1.1982143179740632, -1.2093797317569202, 1.5706053241015951, -1.9461775309413003) #sim
-            # self.gripper_send_position_goal("open")
-            # # #return home
-            # self.go_to("home")
-            # self.move_to_joint(0, 0, 0, 0, 0, 0)
-        else: 
-            #Put the arm in the 1s grasp position
-            # # object on table
+            self.gripper_send_position_goal("open")
             self.go_to("home")
-            # self.gripper_send_position_goal("open")
-            # self.go_to("ready")
-            self.move_to_pose(0.0, 0.70, 0.33, -1.571, 0, 1.571) #sim 
-            # self.gripper_send_position_goal("close")
-            # self.move_to_pose(0.4, 0.70, 0.50, -1.571, 0, 1.571) #sim 
-            # self.move_to_pose(0.4, 0.65, 0.34, -1.571, 0, 1.571)
-            # # #pregrasp
-            # self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851) #sim 
-            # # #grasp
-            # self.move_to_joint(-1.49999877654, -2.84275634, -0.477780227084, -0.111686093081, 1.56994707603, -1.56997936866)
-            # self.gripper_send_position_goal("open")
-            # self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851)
-            # self.go_to("ready")
-            self.move_to_joint(0, 0, 0, 0, 0, 0)
-            # #object on printer
-            # self.go_to("home")
-            # #pregrasp
-            # self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851) #sim
-            # #grasp
-            # self.move_to_joint(-1.49999877654, -2.84275634, -0.477780227084, -0.111686093081, 1.56994707603, -1.56997936866)
-            # self.move("down")
-            # self.gripper_send_position_goal("close")
-            # self.move("up")
-            # self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851)
-            #place object
-            # self.move_to_pose(-0.1, 0.75, 0.34, -1.571, 0, 1.571) #sim 
-            # self.move_to_pose(0.4, 0.65, 0.34, -1.571, 0, 1.571) #sim 
-            # self.gripper_send_position_goal("open")
+            self.go_to("ready")
+            #cena3
+            joint_goal = self.compute_ik(0.07, 0.65, 0.29, -1.571, -1.571, 1.571)
+            #cena4
+            # joint_goal = self.compute_ik(0.07, 0.65, 0.32, -1.571, -1.571, 1.571)
+            self.move_to_joint(*joint_goal)
+
+            self.move_to_joint(-1.49999877654, -2.84275634, -0.477780227084, -0.111686093081, 1.56994707603, -1.56997936866) 
+            self.move("down")
+            self.gripper_send_position_goal("close")
+            self.move("up")
+            self.move_to_joint(-1.47552963041, -2.27293843998, -1.5729205707, 0.655660549776, 1.5072534561, -1.57220616657) 
+            
+            # self.move_to_joint(-1.2382410195362379, -2.1770815903968836, -1.4195257850455416, -1.1159097620131329, 1.5706051297246038, -1.238442495010653) 
+            
+            # joint_goal_1 = self.compute_ik(-0.1, 0.75, 0.40, -1.571, 0, 1.571)
+            # self.move_to_joint(*joint_goal_1)
+
+            joint_goal_2 = self.compute_ik(0.4, 0.65, 0.44, -1.571, 0, 1.571)
+
+            self.move_to_joint(*joint_goal_2)
+
+            self.gripper_send_position_goal("open")
+
             #return home
-            # self.go_to("home")
-            # self.move_to_joint(0, 0, 0, 0, 0, 0)
+            self.go_to("home")
+            self.move_to_joint(0, 0, 0, 0, 0, 0)
+        else: 
+            self.go_to("home")
+            self.gripper_send_position_goal("open")
+            self.go_to("ready")
+
+            self.move_to_pose(0.07, 0.65, 0.30, -1.571, -1.571, 1.571) #FUNCIONA
+            
+            # #pregrasp
+            self.move_to_joint(-1.50002926245, -2.70002937017, -1.00003825701, 0.499945316519, 1.56991733561, -1.56990505851) 
+            # #grasp
+            self.move_to_joint(-1.49999877654, -2.84275634, -0.477780227084, -0.111686093081, 1.56994707603, -1.56997936866)
+            self.move("down")
+            self.gripper_send_position_goal("close")
+            self.move("up")
+            self.move_to_joint(-1.47552963041, -2.27293843998, -1.5729205707, 0.655660549776, 1.5072534561, -1.57220616657) 
+
+            #place object
+            self.move_to_pose(0.4, 0.65, 0.39, -1.571, 0, 1.571)  
+            self.gripper_send_position_goal("open")
+            
+            #return home
+            self.go_to("home")
+            self.move_to_joint(0, 0, 0, 0, 0, 0)
 def main():
     ur5_grasp = ur5_grasp_demo()
     timeStr = time.strftime('%m-%d-%Y_%H_%M_%S_%Z')

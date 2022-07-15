@@ -2,16 +2,16 @@ stomp/manipulator:
   group_name: manipulator
   optimization:
     num_timesteps: 50 #50
-    num_iterations: 100 #100
+    num_iterations: 50 #100
     num_iterations_after_valid: 0
-    num_rollouts: 60
-    max_rollouts: 100
+    num_rollouts: 40
+    max_rollouts: 40
     initialization_method: 1 #[1 : LINEAR_INTERPOLATION, 2 : CUBIC_POLYNOMIAL, 3 : MININUM_CONTROL_COST, 4 : FILL_TRACJECTORY]
     control_cost_weight: 0.0
   task:
     noise_generator:
       - class: stomp_moveit/GoalGuidedMultivariateGaussian
-        stddev: [0.05, 0.1, 0.2, 0.1, 0.1, 0.1]    #[0.1, 0.05, 0.1, 0.05, 0.05, 0.05]
+        stddev: [0.2, 0.25, 0.25, 0.2, 0.15, 0.15]
     cost_functions:
       - class: stomp_moveit/CollisionCheck
         collision_penalty: 1.0
@@ -31,10 +31,9 @@ stomp/manipulator:
         marker_array_topic: stomp_trajectories
         marker_namespace: noisy
     update_filters:
-      - class: stomp_moveit/ControlCostProjectionMatrix
       - class: stomp_moveit/ConstrainedCartesianGoal
       - class: stomp_moveit/PolynomialSmoother
-        poly_order: 3
+        poly_order: 5
       - class: stomp_moveit/TrajectoryVisualization
         line_width: 0.05
         rgb: [0, 191, 255]

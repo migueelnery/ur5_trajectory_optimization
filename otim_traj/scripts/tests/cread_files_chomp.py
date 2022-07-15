@@ -2,16 +2,20 @@
 
 
 # open the sample file used
-file = open('ompl.03-03-2022_12_34_43_-03.txt')
+file = open('stomp.05-29-2022_13_44_54_-03_CENA3.txt')
   
 # read the content of the file opened
 content = file.readlines()
 #stomp
+
+print("SUCCESS:")
+print(content[0], content[4], content[8], content[12], content[16], content[20], content[24])
+
 print("Planning time:")
-print(content[7], content[10], content[16], content[28], content[37], content[40])
+print(content[2], content[6], content[10], content[14], content[18], content[22], content[26])
 
 print("Trajectory Lenght:")
-print(content[8], content[11], content[17], content[29], content[38], content[41])  
+print(content[3], content[7], content[11], content[15], content[19], content[23], content[27])
 
   
 
